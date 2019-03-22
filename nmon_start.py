@@ -47,7 +47,7 @@ for pid in pids:
     except:
         pass
 
-print "\nStarting NMON ..."
+print "\nStarting NMON in background ..."
 subprocess.Popen([nmon_exe,'-F',out_file,'-N','-s',nmon_sleep_seconds,'-c',nmon_stats_count])
 time.sleep(10)
 os.chmod(out_file,0644)
