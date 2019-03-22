@@ -16,8 +16,8 @@ nmon_exe="/usr/bin/nmon"                  # nmon executable
 nmon_sleep_seconds="300"                  # sleep time between nmon iterations
 nmon_stats_count="288"                    # number or nmon iterations
 nmon_file_mask="RPI"                      # output filename mask
-rasp_nmon_dir="/nmon/logs_test"                # output direcroty for Linux server
-days_to_keep=30                         # how many days to keep *.nmon.gz files, before delete them
+rasp_nmon_dir="/nmon/logs"                # output direcroty for Linux server
+days_to_keep=30                           # how many days to keep *.nmon.gz files, before delete them
 
 if not os.path.isdir(rasp_nmon_dir):
     print "Creating "+rasp_nmon_dir
