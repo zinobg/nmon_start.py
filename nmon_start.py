@@ -30,7 +30,7 @@ def check_output_file(file_part):
 
 def main():
     if not os.path.isdir(rasp_nmon_dir):
-        print "Creating "+rasp_nmon_dir
+        print "\nCreating "+rasp_nmon_dir
         os.mkdir(rasp_nmon_dir)
 
     hostname=socket.gethostname()
