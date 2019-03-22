@@ -15,12 +15,12 @@
 '''
 import os,socket,datetime,time,glob,gzip,shutil,signal,subprocess
 
-nmon_exe="/usr/bin/nmon"                  # nmon executable '''
-nmon_sleep_seconds="300"                  # sleep time between nmon iterations '''
-nmon_stats_count="288"                    # number or nmon iterations '''
-nmon_file_mask="RPI"                      # output filename mask '''
-rasp_nmon_dir="/nmon/logs_test"            #    output direcroty for Linux server (will be created if doesn't exists) '''
-days_to_keep=30                         # how many days to keep nmon.gz files, before delete them '''
+nmon_exe="/usr/bin/nmon"                  # nmon executable
+nmon_sleep_seconds="300"                  # sleep time between nmon iterations
+nmon_stats_count="288"                    # number or nmon iterations
+nmon_file_mask="RPI"                      # output filename mask
+rasp_nmon_dir="/nmon/logs"                # output direcroty for Linux server (will be created if doesn't exists)
+days_to_keep=30                           # how many days to keep nmon.gz files, before delete them
 
 def check_output_file(file_part):
     count=1
