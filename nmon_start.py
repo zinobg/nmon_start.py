@@ -4,7 +4,7 @@
 # Author  : Konstantin Yovchev
 # Date    : 18/03/2019
 # Ver     : 3.0
-# Desc    : Collects nmon stats to a file on daily bases, compresses them and keeps them for some time.
+# Desc    : Collects nmon stats of a Linux to a file on daily bases, compresses them and keeps them for some time.
 #         : Add following reccord in root's crontab:
 #         : ----------------------------------------------
 #         : 0 0 * * * /<pathtoscript>/nmon_start.py >/dev/null 2>&1   # Gather information using nmon
