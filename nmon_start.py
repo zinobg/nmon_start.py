@@ -1,5 +1,5 @@
 #!/usr/bin/python
-"""
+'''
  Program : start_nmon.py
  Author  : Konstantin Yovchev
  Date    : 18/03/2019
@@ -12,15 +12,15 @@
          :     ----------------------------------------------
          :     0 0 * * * /<pathtoscript>/nmon_start.py >/dev/null 2>&1   # Gather information using nmon
          :     ----------------------------------------------
-"""
+'''
 import os,socket,datetime,time,glob,gzip,shutil,signal,subprocess
 
-nmon_exe="/usr/bin/nmon"                  """ nmon executable """
-nmon_sleep_seconds="300"                  """ sleep time between nmon iterations """
-nmon_stats_count="288"                    """ number or nmon iterations """
-nmon_file_mask="RPI"                      """ output filename mask """
-rasp_nmon_dir="/nmon/logs"                """ output direcroty for Linux server (will be created if doesn't exists) """
-days_to_keep=30                           """ how many days to keep *.nmon.gz files, before delete them """
+nmon_exe="/usr/bin/nmon"                  # nmon executable '''
+nmon_sleep_seconds="300"                  # sleep time between nmon iterations '''
+nmon_stats_count="288"                    # number or nmon iterations '''
+nmon_file_mask="RPI"                      # output filename mask '''
+rasp_nmon_dir="/nmon/logs_test"            #    output direcroty for Linux server (will be created if doesn't exists) '''
+days_to_keep=30                         # how many days to keep nmon.gz files, before delete them '''
 
 def check_output_file(file_part):
     count=1
@@ -35,9 +35,10 @@ def main():
 
     hostname=socket.gethostname()
     todays_date=datetime.datetime.now().strftime("%y%m%d")
+    nmon_file_pattern=rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname
 
     print "\nGenerating nmon log file."
-    out_file=check_output_file(rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname+"_"+todays_date)
+    out_file=check_output_file(nmon_file_pattern+"_"+todays_date)
     print "\t- "+out_file
 
     print "\nStopping old nmon processes."
@@ -45,7 +46,7 @@ def main():
     for pid in pids:
         try:
             param=open(os.path.join('/proc',pid,'cmdline'),'rb').read().split('\0')[2]
-            if rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname in param:
+            if nmon_file_pattern in param:
                 os.kill(int(pid),signal.SIGKILL)
                 #print "pid to kill "+pid
         except:
@@ -58,7 +59,7 @@ def main():
 
     print "\nCompressing previous nmon data files."
     time.sleep(10)
-    nmon_files=[nmon_file for nmon_file in glob.glob(rasp_nmon_dir+"/"+nmon_file_mask+"_*.nmon") if nmon_file != out_file]
+    nmon_files=[nmon_file for nmon_file in glob.glob(nmon_file_pattern+"_*.nmon") if nmon_file != out_file]
     for nmon_file in nmon_files:
         with open(nmon_file,"rb") as f_in, gzip.open(nmon_file+".gz","wb") as f_out:
             shutil.copyfileobj(f_in,f_out)
@@ -68,7 +69,7 @@ def main():
 
     print "\nCleaning old archives"
     time.sleep(5)
-    nmon_files_gz=[nmon_file_gz for nmon_file_gz in glob.glob(rasp_nmon_dir+"/"+nmon_file_mask+"_*.nmon.gz") if (time.time()-os.path.getmtime(nmon_file_gz))/86400 > days_to_keep]
+    nmon_files_gz=[nmon_file_gz for nmon_file_gz in glob.glob(nmon_file_pattern+"_*.nmon.gz") if (time.time()-os.path.getmtime(nmon_file_gz))/86400 > days_to_keep]
     for nmon_file_gz in nmon_files_gz:
         os.remove(nmon_file_gz)
         print "\t- "+nmon_file+" -> deleted"
