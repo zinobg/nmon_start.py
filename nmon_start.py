@@ -66,8 +66,8 @@ for pid in pids:
         param=open(os.path.join('/proc',pid,'cmdline'),'rb').read().split('\0')[2]
         if rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname in param:
             os.kill(int(pid),signal.SIGKILL)
-            #print "pid to kill "+pid
-    except: # proc has already terminated
+            #print "pid to kill: "+pid
+    except:
         pass
 
 #
