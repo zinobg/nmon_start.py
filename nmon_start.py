@@ -16,12 +16,8 @@ nmon_exe="/usr/bin/nmon"                  # nmon executable
 nmon_sleep_seconds="300"                  # sleep time between nmon iterations
 nmon_stats_count="288"                    # number or nmon iterations
 nmon_file_mask="RPI"                      # output filename mask
-rasp_nmon_dir="/nmon/logs"                # output direcroty for Linux server
-days_to_keep=30                           # how many days to keep *.nmon.gz files, before delete them
-
-if not os.path.isdir(rasp_nmon_dir):
-    print "Creating "+rasp_nmon_dir
-    os.mkdir(rasp_nmon_dir)
+rasp_nmon_dir="/nmon/logs_test"                # output direcroty for Linux server
+days_to_keep=30                         # how many days to keep *.nmon.gz files, before delete them
 
 def check_output_file(file_part):
     count=1
@@ -29,44 +25,50 @@ def check_output_file(file_part):
         count=count+1
     return file_part+"_"+str(count).zfill(2)+".nmon"
 
-hostname=socket.gethostname()
-todays_date=datetime.datetime.now().strftime("%y%m%d")
+def main():
+    if not os.path.isdir(rasp_nmon_dir):
+        print "Creating "+rasp_nmon_dir
+        os.mkdir(rasp_nmon_dir)
 
-print "\nGenerating nmon log file."
-out_file=check_output_file(rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname+"_"+todays_date)
-print "\t- "+out_file
+    hostname=socket.gethostname()
+    todays_date=datetime.datetime.now().strftime("%y%m%d")
 
-print "\nStopping old nmon processes."
-pids=[pid for pid in os.listdir('/proc') if pid.isdigit()]
-for pid in pids:
-    try:
-        param=open(os.path.join('/proc',pid,'cmdline'),'rb').read().split('\0')[2]
-        if rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname in param:
-            os.kill(int(pid),signal.SIGKILL)
-            #print "pid to kill "+pid
-    except:
-        pass
+    print "\nGenerating nmon log file."
+    out_file=check_output_file(rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname+"_"+todays_date)
+    print "\t- "+out_file
 
-print "\nStarting NMON in background ..."
-subprocess.Popen([nmon_exe,'-F',out_file,'-N','-s',nmon_sleep_seconds,'-c',nmon_stats_count])
-time.sleep(10)
-os.chmod(out_file,0644)
+    print "\nStopping old nmon processes."
+    pids=[pid for pid in os.listdir('/proc') if pid.isdigit()]
+    for pid in pids:
+        try:
+            param=open(os.path.join('/proc',pid,'cmdline'),'rb').read().split('\0')[2]
+            if rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname in param:
+                os.kill(int(pid),signal.SIGKILL)
+                #print "pid to kill "+pid
+        except:
+            pass
 
-print "\nCompressing previous nmon data files."
-time.sleep(10)
-nmon_files=[nmon_file for nmon_file in glob.glob(rasp_nmon_dir+"/"+nmon_file_mask+"_*.nmon") if nmon_file != out_file]
-for nmon_file in nmon_files:
-    with open(nmon_file,"rb") as f_in, gzip.open(nmon_file+".gz","wb") as f_out:
-        shutil.copyfileobj(f_in,f_out)
-    if os.path.isfile(nmon_file+".gz") and os.path.getsize(nmon_file+".gz") >0:
-        os.remove(nmon_file)
-        print "\t- "+nmon_file+" -> gzipped"
+    print "\nStarting NMON in background ..."
+    subprocess.Popen([nmon_exe,'-F',out_file,'-N','-s',nmon_sleep_seconds,'-c',nmon_stats_count])
+    time.sleep(10)
+    os.chmod(out_file,0644)
 
-print "\nCleaning old archives"
-time.sleep(5)
-nmon_files_gz=[nmon_file_gz for nmon_file_gz in glob.glob(rasp_nmon_dir+"/"+nmon_file_mask+"_*.nmon.gz") if (time.time()-os.path.getmtime(nmon_file_gz))/86400 > days_to_keep]
-for nmon_file_gz in nmon_files_gz:
-    os.remove(nmon_file_gz)
-    print "\t- "+nmon_file+" -> deleted"
+    print "\nCompressing previous nmon data files."
+    time.sleep(10)
+    nmon_files=[nmon_file for nmon_file in glob.glob(rasp_nmon_dir+"/"+nmon_file_mask+"_*.nmon") if nmon_file != out_file]
+    for nmon_file in nmon_files:
+        with open(nmon_file,"rb") as f_in, gzip.open(nmon_file+".gz","wb") as f_out:
+            shutil.copyfileobj(f_in,f_out)
+        if os.path.isfile(nmon_file+".gz") and os.path.getsize(nmon_file+".gz") >0:
+            os.remove(nmon_file)
+            print "\t- "+nmon_file+" -> gzipped"
 
-exit()
+    print "\nCleaning old archives"
+    time.sleep(5)
+    nmon_files_gz=[nmon_file_gz for nmon_file_gz in glob.glob(rasp_nmon_dir+"/"+nmon_file_mask+"_*.nmon.gz") if (time.time()-os.path.getmtime(nmon_file_gz))/86400 > days_to_keep]
+    for nmon_file_gz in nmon_files_gz:
+        os.remove(nmon_file_gz)
+        print "\t- "+nmon_file+" -> deleted"
+
+if __name__ == "__main__":
+    main()
