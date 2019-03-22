@@ -5,10 +5,13 @@
 # Date    : 18/03/2019
 # Ver     : 3.0
 # Desc    : Collects nmon stats of a Linux to a file on daily bases, compresses them and keeps them for some time.
-#         : Add following reccord in root's crontab:
-#         : ----------------------------------------------
-#         : 0 0 * * * /<pathtoscript>/nmon_start.py >/dev/null 2>&1   # Gather information using nmon
-#         : ----------------------------------------------
+#         :
+#         : Installation instructions:
+#         :  1. Download and install nmon
+#         :  2. Add the following reccord in root's crontab:
+#         :     ----------------------------------------------
+#         :     0 0 * * * /<pathtoscript>/nmon_start.py >/dev/null 2>&1   # Gather information using nmon
+#         :     ----------------------------------------------
 ################################################################
 import os,socket,datetime,time,glob,gzip,shutil,signal,subprocess
 
@@ -16,8 +19,8 @@ nmon_exe="/usr/bin/nmon"                  # nmon executable
 nmon_sleep_seconds="300"                  # sleep time between nmon iterations
 nmon_stats_count="288"                    # number or nmon iterations
 nmon_file_mask="RPI"                      # output filename mask
-rasp_nmon_dir="/nmon/logs"                # output direcroty for Linux server
-days_to_keep=30                           # how many days to keep *.nmon.gz files, before delete them
+rasp_nmon_dir="/nmon/logs_test"                # output direcroty for Linux server
+days_to_keep=30                         # how many days to keep *.nmon.gz files, before delete them
 
 def check_output_file(file_part):
     count=1
