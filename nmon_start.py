@@ -3,8 +3,8 @@
  Program : start_nmon.py
  Author  : Konstantin Yovchev
  Date    : 18/03/2019
- Ver      : 3.0
- Desc    : Collects nmon stats of a Linux to a file on daily bases, compresses them and keeps them for some time.
+ Ver	  : 3.0
+ Desc    : Collects nmon stats of a Linux to a file on daily bases, compresses them and keeps them for some time. 
          :
          : Installation instructions:
          :  1. Download and install nmon
@@ -19,14 +19,8 @@ nmon_exe="/usr/bin/nmon"                  # nmon executable
 nmon_sleep_seconds="300"                  # sleep time between nmon iterations
 nmon_stats_count="288"                    # number or nmon iterations
 nmon_file_mask="RPI"                      # output filename mask
-rasp_nmon_dir="/nmon/logs"                # output direcroty for Linux server (will be created if doesn't exists)
-days_to_keep=30                           # how many days to keep nmon.gz files, before delete them
-
-def check_output_file(file_part):
-    count=1
-    while glob.glob(file_part+"_"+str(count).zfill(2)+".*"):
-        count=count+1
-    return file_part+"_"+str(count).zfill(2)+".nmon"
+rasp_nmon_dir="/nmon/logs_test"            #    output direcroty for Linux server (will be created if doesn't exists)
+days_to_keep=30                         # how many days to keep nmon.gz files, before delete them
 
 def main():
     if not os.path.isdir(rasp_nmon_dir):
@@ -38,7 +32,10 @@ def main():
     nmon_file_pattern=rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname
 
     print "\nGenerating nmon log file."
-    out_file=check_output_file(nmon_file_pattern+"_"+todays_date)
+    count=1
+    while glob.glob(nmon_file_pattern+"_"+todays_date+"_"+str(count).zfill(2)+".*"):
+        count=count+1
+    out_file=nmon_file_pattern+"_"+todays_date+"_"+str(count).zfill(2)+".nmon"
     print "\t- "+out_file
 
     print "\nStopping old nmon processes."
