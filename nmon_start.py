@@ -2,8 +2,8 @@
 '''
  Program : start_nmon.py
  Author  : Konstantin Yovchev
- Date    : 27/03/2019
- Ver     : 3.1
+ Date    : 11/02/2020
+ Ver     : 3.2
  Desc    : Collects nmon stats of a Linux to a file on daily bases, compresses them and keeps them for some time.
          :
          : Installation instructions:
