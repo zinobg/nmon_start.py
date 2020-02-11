@@ -37,7 +37,7 @@ def main():
 
     hostname=ghostname()
     todays_date=dtime.now().strftime("%y%m%d")
-    nmon_file_pattern=rasp_nmon_dir+"/"+nmon_file_mask+"_"+hostname
+    nmon_file_pattern=rasp_nmon_dir+"/"+nmon_prefix+"_"+hostname
 
     print("\nGenerating nmon log file.")
     count=1
