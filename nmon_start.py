@@ -58,7 +58,7 @@ def main():
 
     print("\nStarting NMON in background ...")
     sPopen([nmon_exe,'-F',out_file,'-N','-s',nmon_sleep_seconds,'-c',nmon_stats_count])
-    while os.path.isfile(out_file):
+    while not os.path.isfile(out_file):
         time.sleep(1)
     os.chmod(out_file,stat.S_IREAD|stat.S_IWRITE|stat.S_IRGRP|stat.S_IROTH)
 
