@@ -1,18 +1,20 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 '''
  Program : start_nmon.py
  Author  : Konstantin Yovchev
- Date    : 11/02/2020
- Ver     : 3.2
- Desc    : Collects nmon stats of a Linux to a file on daily bases, compresses them and keeps them for some time.
-         :
+ Date    : 12/02/2020
+ Ver     : 2.2
+ Desc    : Collects nmon stats to a file on daily bases, compresses them and keeps them for some time.
+ OS      : Tested on AIX and Linux
+         : 
          : Installation instructions:
          :  1. Download and install nmon
          :  2. Add the following reccord in root's crontab:
          :     ----------------------------------------------
          :     0 0 * * * /<pathtoscript>/nmon_start.py >/dev/null 2>&1   # Gather information using nmon
          :     ----------------------------------------------
-         :  3. Add to /etc/rc.local -> $ echo "/root/scripts/nmon_start.py > /dev/console 2>&1" >> /etc/rc.local
+         :  3. (AIX) Add to /etc/inittab    -> $ mkitab "nmon:2:once:/nmon/scripts/nmon_start.py > /dev/console 2>&1"
+         :     (Linux) Add to /etc/rc.local -> $ echo "/root/scripts/nmon_start.py/nmon_start.py" >> /etc/rc.local
 '''
 import os,time,stat
 from subprocess import Popen as sPopen
@@ -26,7 +28,7 @@ from datetime import datetime as dtime
 nmon_exe="/usr/bin/nmon"                  # nmon executable
 nmon_sleep_seconds="300"                  # sleep time between nmon iterations
 nmon_stats_count="288"                    # number or nmon iterations
-nmon_prefix="DHL"                         # output filename prefix
+nmon_prefix="RPI"                         # output filename prefix
 rasp_nmon_dir="/nmon/logs"                # output direcroty for Linux server (will be created if doesn't exists)
 days_to_keep=30                           # how many days to keep nmon.gz files, before delete them
 
@@ -47,23 +49,20 @@ def main():
     print("\t- "+out_file)
 
     print("\nStopping old nmon processes.")
-    pids=[pid for pid in os.listdir('/proc') if pid.isdigit()]
-    for pid in pids:
-        try:
-            param=open(os.path.join('/proc',pid,'cmdline'),'rb').read().split('\0')[2]
-            if nmon_file_pattern in param:
-                os.kill(int(pid),sSIGKILL)
-                #print("pid to kill "+pid)
-        except:
-            pass
+    foo=os.popen('ps -ef')
+    for param in foo.readlines():
+        if nmon_file_pattern in param:
+            pid=param.split()[1]
+            os.kill(int(pid),sSIGKILL)
+            #print("pid to kill "+pid)
 
     print("\nStarting NMON in background ...")
     sPopen([nmon_exe,'-F',out_file,'-N','-s',nmon_sleep_seconds,'-c',nmon_stats_count])
-    time.sleep(10)
+    time.sleep(2)
     os.chmod(out_file,stat.S_IREAD|stat.S_IWRITE|stat.S_IRGRP|stat.S_IROTH)
 
     print("\nCompressing previous nmon data files.")
-    time.sleep(10)
+    time.sleep(2)
     nmon_files=[nmon_file for nmon_file in gglob(nmon_file_pattern+"_*.nmon") if nmon_file != out_file]
     for nmon_file in nmon_files:
         with open(nmon_file,"rb") as f_in, gopen(nmon_file+".gz","wb") as f_out:
@@ -73,7 +72,7 @@ def main():
             print("\t- "+nmon_file+" -> gzipped")
 
     print("\nCleaning old archives")
-    time.sleep(5)
+    time.sleep(2)
     nmon_files_gz=[nmon_file_gz for nmon_file_gz in gglob(nmon_file_pattern+"_*.nmon.gz") if (time.time()-os.path.getmtime(nmon_file_gz))/86400 > days_to_keep]
     for nmon_file_gz in nmon_files_gz:
         os.remove(nmon_file_gz)
