@@ -3,7 +3,7 @@
  Program : start_nmon.py
  Author  : Konstantin Yovchev
  Date    : 12/02/2020
- Ver     : 2.2
+ Ver     : 2.3
  Desc    : Collects nmon stats to a file on daily bases, compresses them and keeps them for some time.
  OS      : Tested on AIX and Linux
          : 
@@ -58,7 +58,8 @@ def main():
 
     print("\nStarting NMON in background ...")
     sPopen([nmon_exe,'-F',out_file,'-N','-s',nmon_sleep_seconds,'-c',nmon_stats_count])
-    time.sleep(2)
+    while os.path.isfile(out_file):
+        time.sleep(1)
     os.chmod(out_file,stat.S_IREAD|stat.S_IWRITE|stat.S_IRGRP|stat.S_IROTH)
 
     print("\nCompressing previous nmon data files.")
