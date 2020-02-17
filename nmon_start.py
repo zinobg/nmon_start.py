@@ -1,4 +1,4 @@
-#!/opt/bin/python3
+#!/usr/bin/python3
 '''
  Program : start_nmon.py
  Author  : Konstantin Yovchev
