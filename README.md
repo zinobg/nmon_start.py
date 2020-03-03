@@ -10,3 +10,4 @@
   
 	/<pathtoscript>/nmon_start.py/nmon_start.py > /dev/console 2>&1 >> /etc/rc.local
 
+Collected nmon files are used to generate a deep performance review for the monitored server, using [nmon Analyser](http://nmon.sourceforge.net/pmwiki.php?n=Site.Nmon-Analyser)
