@@ -8,5 +8,5 @@
   
   3. Add the following record in /etc/rc.local:
   
-	/<pathtoscript>/nmon_start.py/nmon_start.py > /dev/console 2>&1" >> /etc/rc.local
+	/<pathtoscript>/nmon_start.py/nmon_start.py > /dev/console 2>&1 >> /etc/rc.local
 
