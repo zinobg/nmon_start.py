@@ -44,7 +44,7 @@ def main():
     '''
     if not os.path.isdir(rasp_nmon_logs):
         print("\nCreating "+rasp_nmon_logs)
-        os.mkdir(rasp_nmon_logs)
+        os.makedirs(path,exist_ok=True)
 
     hostname=ghostname()
     todays_date=dtime.now().strftime("%y%m%d")
